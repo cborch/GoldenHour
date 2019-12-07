@@ -12,6 +12,8 @@
 		C51F610C239600050021B95E /* SolarLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51F610B239600050021B95E /* SolarLocation.swift */; };
 		C51F610E239606450021B95E /* SolarDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51F610D239606450021B95E /* SolarDetail.swift */; };
 		C51F61102396B7350021B95E /* SolarDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51F610F2396B7350021B95E /* SolarDetails.swift */; };
+		C54996A42398421C002AFBC1 /* PageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54996A32398421C002AFBC1 /* PageVC.swift */; };
+		C54996A6239844C2002AFBC1 /* ListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54996A5239844C2002AFBC1 /* ListVC.swift */; };
 		C555E40F239726480051145D /* DayProgressSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C555E40E239726480051145D /* DayProgressSection.swift */; };
 		C555E411239726980051145D /* DayType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C555E410239726980051145D /* DayType.swift */; };
 		C555E413239727EA0051145D /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C555E412239727EA0051145D /* UIColor+Extensions.swift */; };
@@ -30,6 +32,8 @@
 		C51F610B239600050021B95E /* SolarLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarLocation.swift; sourceTree = "<group>"; };
 		C51F610D239606450021B95E /* SolarDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarDetail.swift; sourceTree = "<group>"; };
 		C51F610F2396B7350021B95E /* SolarDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarDetails.swift; sourceTree = "<group>"; };
+		C54996A32398421C002AFBC1 /* PageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageVC.swift; sourceTree = "<group>"; };
+		C54996A5239844C2002AFBC1 /* ListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListVC.swift; sourceTree = "<group>"; };
 		C555E40E239726480051145D /* DayProgressSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayProgressSection.swift; sourceTree = "<group>"; };
 		C555E410239726980051145D /* DayType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayType.swift; sourceTree = "<group>"; };
 		C555E412239727EA0051145D /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
@@ -88,6 +92,8 @@
 			children = (
 				C562D1932395C17100CE7D91 /* AppDelegate.swift */,
 				C562D1952395C17100CE7D91 /* ViewController.swift */,
+				C54996A32398421C002AFBC1 /* PageVC.swift */,
+				C54996A5239844C2002AFBC1 /* ListVC.swift */,
 				C51F610B239600050021B95E /* SolarLocation.swift */,
 				C51F610D239606450021B95E /* SolarDetail.swift */,
 				C51F610F2396B7350021B95E /* SolarDetails.swift */,
@@ -124,6 +130,7 @@
 				C562D18D2395C17100CE7D91 /* Frameworks */,
 				C562D18E2395C17100CE7D91 /* Resources */,
 				073D3048B721164B8E548168 /* [CP] Embed Pods Frameworks */,
+				7047C830449CA15EA35C398B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -198,6 +205,23 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GoldenHour/Pods-GoldenHour-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		7047C830449CA15EA35C398B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GoldenHour/Pods-GoldenHour-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GoldenHour/Pods-GoldenHour-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GoldenHour/Pods-GoldenHour-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D20182FA49A76FFB4520B0E3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -227,12 +251,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C54996A6239844C2002AFBC1 /* ListVC.swift in Sources */,
 				C555E411239726980051145D /* DayType.swift in Sources */,
 				C555E40F239726480051145D /* DayProgressSection.swift in Sources */,
 				C555E415239728060051145D /* UIView+Extensions.swift in Sources */,
 				C562D1962395C17100CE7D91 /* ViewController.swift in Sources */,
 				C51F61082395CA930021B95E /* DayCell.swift in Sources */,
 				C51F61102396B7350021B95E /* SolarDetails.swift in Sources */,
+				C54996A42398421C002AFBC1 /* PageVC.swift in Sources */,
 				C51F610C239600050021B95E /* SolarLocation.swift in Sources */,
 				C562D1942395C17100CE7D91 /* AppDelegate.swift in Sources */,
 				C555E413239727EA0051145D /* UIColor+Extensions.swift in Sources */,
