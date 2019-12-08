@@ -10,8 +10,9 @@ import Foundation
 import SwiftySuncalc
 import CoreLocation
 import SwiftDate
+import MapKit
 
-class SolarDetail {
+class SolarDetail: NSObject, MKAnnotation {
     
     var name = "Test name"
     let minutesPerDay: Double = 24 * 60
@@ -39,10 +40,14 @@ class SolarDetail {
         return coordinate.latitude
     }
     
+    var title: String? {
+        return name
+    }
+    
     var location = CLLocation()
     
     
-//    init(date: Date) {
+//    init(date: Date, location: CLLocation) {
 //        var times = suncalc.getTimes(date: date, lat: location.coordinate.latitude, lng: location.coordinate.longitude);
 //        self.morningGoldenHourStart = times["dawn"]
 //        self.morningGoldenHourEnd = times["goldenHourEnd"]
@@ -66,38 +71,37 @@ class SolarDetail {
         
         self.morningGoldenHourDuration = Int((morningGoldenHourEnd.timeIntervalSince(morningGoldenHourStart) / 60).rounded())
         self.eveningGoldenHourDuration = Int((eveningGoldenHourEnd.timeIntervalSince(eveningGoldenHourStart) / 60).rounded())
-        print("^^^^^ Times set using the location \(self.location)")
     }
     
     func calculateSections() -> [Double] {
         var midnight = Date()
         midnight = midnight.dateAtStartOf(.day)
-        print(midnight)
+        //print(midnight)
         
         let normalSection1 = abs((midnight.timeIntervalSince(morningGoldenHourStart) / 60) / minutesPerDay)
-        print(normalSection1)
+        //print(normalSection1)
         
         let morningGHSection1 = abs((morningGoldenHourStart.timeIntervalSince(sunrise) / 60) / minutesPerDay)
-        print(morningGHSection1)
+        //print(morningGHSection1)
         
         let sunriseSection = 0.01
         
         let morningGHSection2 = abs((sunrise.timeIntervalSince(morningGoldenHourEnd) / 60) / minutesPerDay)
-        print(morningGHSection2)
+        //print(morningGHSection2)
         
         let normalSection = abs((morningGoldenHourEnd.timeIntervalSince(eveningGoldenHourStart) / 60) / minutesPerDay)
-        print(normalSection)
+        //print(normalSection)
         
         let eveningGHSection1 = abs((eveningGoldenHourStart.timeIntervalSince(sunset) / 60) / minutesPerDay)
-        print("evening section 1 \(eveningGHSection1)")
+        //print("evening section 1 \(eveningGHSection1)")
         
         let sunsetSection = 0.01
         
         let eveningGHSection2 = abs((sunset.timeIntervalSince(eveningGoldenHourEnd) / 60) / minutesPerDay)
-        print(" evening section 2 \(eveningGHSection2)")
+        //print(" evening section 2 \(eveningGHSection2)")
         
         let normalSection2 = abs(1 - normalSection1 - morningGHSection1 - sunriseSection - morningGHSection2 - normalSection1 - eveningGHSection1 - sunsetSection - eveningGHSection2)
-        print(" normal section 2 \(normalSection2)")
+        //print(" normal section 2 \(normalSection2)")
         
         var sectionArray = [normalSection1, morningGHSection1, sunriseSection, morningGHSection2, normalSection1, eveningGHSection1, sunsetSection, eveningGHSection2, normalSection2]
         

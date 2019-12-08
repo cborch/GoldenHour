@@ -10,12 +10,15 @@ import UIKit
 import CoreLocation
 import MultiProgressView
 import SwiftDate
+import MapKit
 
 class ViewController: UIViewController {
     
     var currentPage = 0
     var duration: TimeInterval!
+    let regionDistance: CLLocationDistance = 100000
 
+    @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var countDownLabel: UILabel!
     @IBOutlet weak var eveningGoldenHourDurationLabel: UILabel!
@@ -43,66 +46,40 @@ class ViewController: UIViewController {
     let formatter = DateFormatter()
     var solarDetails = SolarDetails()
     var countDownTimer = Timer()
-    //var executionTimer = Timer()
     var secondsToGH: Double = 0
     var isGoldenHour: Bool! {
         didSet {
-            print("now i have \(isGoldenHour) before I had \(oldValue)")
+            //print("now i have \(isGoldenHour) before I had \(oldValue)")
             if oldValue != isGoldenHour {
-                print("Listener Triggered")
+                //print("Listener Triggered")
                 triggerTimer(with: currentPage)
-                //executionTimer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.triggerTimer)), userInfo: nil, repeats: true)
             }
         }
     }
     
-    
-
-    
-    //var date = Date()
-    //let calendar = Calendar.current
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureFormatter()
-        print("Loaded")
         countDownLabel.textColor = .orange
         configureBar()
         configureBackgroundViews()
         animateBackgroundViews(count: 2, views: [topBackgroundView, bottomBackgroundView])
         
-        print("^^ \(currentPage)")
-        if currentPage == 0 {
-            loadCurrentLocation {
-                self.solarDetails.solarDetailsArray[self.currentPage].getTimes(date: Date())
-                self.updateUserInterface(for: self.currentPage)
-            }
+        
+        if currentPage != 0 {
+            solarDetails.solarDetailsArray[currentPage].getTimes(date: Date())
+            updateUserInterface(for: currentPage)
         }
         
-        print("^^ \(solarDetails.solarDetailsArray[currentPage].location)")
-        
-        print("^^ \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunrise))")
-        
-        
-        
-        //solarDetails = SolarDetails()
-        
-        
+        if currentPage == 0 {
+            loadCurrentLocation {
+                self.solarDetails.solarDetailsArray[0].getTimes(date: Date())
+            }
+        }
+    
 
-        
-        
 
-        
-        //currentLocation = CLLocation(latitude: 42.339, longitude: -71.1586)
-        //currentLocation = CLLocation(latitude: 40.38, longitude: -118.83)
-        //let solarDetail = SolarDetail(date: Date(), location: currentLocation)
-        //print(solarDetail.morningGoldenHourStart)
-        //solarDetails.solarDetailsArray.append(solarDetail)
-        
-        //updateUserInterface(for: currentPage)
         var sectionArray = solarDetails.solarDetailsArray[currentPage].calculateSections()
-        
         for i in 0..<sectionArray.count {
             progressView.setProgress(section: i, to: 0.0)
         }
@@ -110,45 +87,43 @@ class ViewController: UIViewController {
         UIView.animate(withDuration: 0.4, delay: 1, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: .curveLinear, animations: {
             for i in 0..<sectionArray.count {
                 self.progressView.setProgress(section: i, to: Float(sectionArray[i]))
-                //count += Float(sectionArray[i])
             }
-            //print(count)
         }, completion: nil)
         
-        //var count: Float = 0
-        
-        
-        print(formatter.string(from: solarDetails.solarDetailsArray[0].eveningGoldenHourStart))
-        print(formatter.string(from: solarDetails.solarDetailsArray[0].eveningGoldenHourEnd))
-        
-        //triggerTimer(with: currentPage)
+        let region = MKCoordinateRegion(center: solarDetails.solarDetailsArray[currentPage].location.coordinate, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+        mapView.setRegion(region, animated: true)
         
         checkGH()
-        //animateProgressBar()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
+        if currentPage == 0 {
+            updateUserInterface(for: 0)
+        }
+    }
+    
+    func updateMap() {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotation(solarDetails.solarDetailsArray[currentPage])
+        mapView.setCenter(solarDetails.solarDetailsArray[currentPage].location.coordinate, animated: true)
     }
     
     func loadCurrentLocation(completed: @escaping () -> ()) {
         getLocation()
-        print("^^ Called load current location")
         completed()
-        
     }
+    
     
     func animateProgressBar() {
         let timeRemaining = secondsToGH
         let percentageCompleted = abs(timeRemaining / solarDetails.solarDetailsArray[currentPage].getCurrentAbsoluteDuration())
         statusBackgroundView.setProgress(section: 2, to: Float(percentageCompleted))
-        //print("%%%%%% TR \(timeRemaining) DR \(solarDetails.solarDetailsArray[currentPage].getCurrentAbsoluteDuration()) \(percentageCompleted)")
         UIView.animate(withDuration: 1.0, delay:1, options: [.repeat, .autoreverse], animations: {
             self.statusBackgroundView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
         }, completion: nil)
         
     }
+    
     
     func animateBackgroundViews(count: Float, views: [UIView]) {
         UIView.animate(withDuration:0.5, delay:0, options: [.repeat, .autoreverse], animations: {
@@ -164,19 +139,15 @@ class ViewController: UIViewController {
         })
     }
     
+    
     func setupTimerDuration(with duration: Double) {
         secondsToGH = duration
     }
     
+    
     @objc func triggerTimer(with currentElement: Int) {
         print("*** Timer Triggered   I think its this date \(formatter.string(from: Date())) and this time zone \(formatter.timeZone)")
-        // Every second check if it is GH
-        // If it is GH(its in the interval)
-        // - Start the timer with the duration
-        // - Set GH to true
-        // - Stop checking if its GH for the duration
         let solarDetailElement = solarDetails.solarDetailsArray[currentElement]
-        //var duration: TimeInterval = 0
         if (Date() < solarDetailElement.morningGoldenHourEnd && Date() > solarDetailElement.morningGoldenHourStart) { // We are in morning GH
             duration = Date().timeIntervalSince(solarDetailElement.morningGoldenHourEnd)
             topBackgroundView.backgroundColor = UIColor.StorageExample.progressOrange
@@ -204,6 +175,7 @@ class ViewController: UIViewController {
         runTimer()
     }
     
+    
     func checkGH() {
         let solarDetailElement = solarDetails.solarDetailsArray[currentPage]
         if (Date() < solarDetailElement.morningGoldenHourEnd && Date() > solarDetailElement.morningGoldenHourStart) { // We are in morning GH
@@ -217,6 +189,7 @@ class ViewController: UIViewController {
         }
     }
     
+    
     func timeString(time: TimeInterval) -> String {
         let hours = Int(time) / 3600
         let minutes = Int(time) / 60 % 60
@@ -224,14 +197,10 @@ class ViewController: UIViewController {
         return String(format: "%2d:%02d:%02d", hours, minutes, seconds)
     }
     
+    
     func runTimer() {
         countDownTimer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
-        //if !isGoldenHour {
-        //    print("I ran")
-        //    executionTimer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.triggerTimer)), userInfo: nil, repeats: true)
-            //isGoldenHour = false
         }
-        
     
     
     @objc func updateTimer() {
@@ -246,17 +215,19 @@ class ViewController: UIViewController {
         }
     }
     
+    
     func configureFormatter() {
         formatter.timeZone = .current
         formatter.dateFormat = "HH:mm"
         formatter.timeStyle = .short
-        print("^^ formatter configured")
     }
+    
     
     func configureBar() {
         progressView.lineCap = .round
         progressView.cornerRadius = 10
     }
+    
     
     func configureBackgroundViews() {
         bottomBackgroundView.layer.cornerRadius = 10
@@ -266,15 +237,25 @@ class ViewController: UIViewController {
         statusBackgroundView.bringSubviewToFront(statusLabel)
         ghKeyBox1.layer.cornerRadius = 6
         ghKeyBox1.backgroundColor = UIColor.StorageExample.progressYellow
+        ghKeyBox1.layer.borderWidth = 1
+        sunriseKeyBox.layer.borderWidth = 1
+        sunriseKeyBox.layer.borderColor = UIColor.darkGray.cgColor
+        ghKeyBox1.layer.borderColor = UIColor.darkGray.cgColor
         ghKeyBox2.layer.cornerRadius = 6
         ghKeyBox2.backgroundColor = UIColor.StorageExample.progressYellow
+        ghKeyBox2.layer.borderWidth = 1
+        ghKeyBox2.layer.borderColor = UIColor.darkGray.cgColor
+        sunsetKeyBox.layer.borderWidth = 1
+        sunsetKeyBox.layer.borderColor = UIColor.darkGray.cgColor
         sunriseKeyBox.layer.cornerRadius = 6
         
         sunriseKeyBox.backgroundColor = UIColor.StorageExample.progressOrange
         sunsetKeyBox.layer.cornerRadius = 6
         sunsetKeyBox.backgroundColor = UIColor.StorageExample.progressOrange
         
+        mapView.layer.cornerRadius = 10
     }
+    
     
     func updateUserInterface(for currentPage: Int) {
         morningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourEnd))"
@@ -285,11 +266,11 @@ class ViewController: UIViewController {
         
         morningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].morningGoldenHourDuration!) minutes"
         eveningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].eveningGoldenHourDuration!) minutes"
-        print("^^^ UI Updated")
+        print("^^^^ UI Updated with location \(solarDetails.solarDetailsArray[currentPage].location) sunrise should be \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunrise))")
+        updateMap()
     }
     
 
-    
     func fetchNextSevenDays() {
         var tempDate = Date()
         for _ in 0..<7 {
@@ -338,7 +319,6 @@ extension ViewController: CLLocationManagerDelegate {
     func getLocation() {
         locationManager = CLLocationManager()
         locationManager.delegate = self
-        print("^^ called get location")
     }
     
     func handleLocationAuthorizationStatus(status: CLAuthorizationStatus) {
@@ -364,10 +344,8 @@ extension ViewController: CLLocationManagerDelegate {
         currentLocation = locations.last!
         print("%%%%% \(currentLocation)")
         solarDetails.solarDetailsArray[currentPage].location = currentLocation
-        print("^^ should have updated location")
-        let currentLatitude = currentLocation.coordinate.latitude
-        let currentLongitude = currentLocation.coordinate.longitude
-        let currentCordinates = "\(currentLatitude),\(currentLongitude)"
+        solarDetails.solarDetailsArray[currentPage].coordinate = currentLocation.coordinate
+        print("^^ I am trying to update the current page's location with \(currentLocation)")
         geoCoder.reverseGeocodeLocation(currentLocation, completionHandler:
             {placemarks, error in
                 if placemarks != nil {
@@ -377,8 +355,11 @@ extension ViewController: CLLocationManagerDelegate {
                     print("Erro retrieving place. Error code: \(error!)")
                     place = "Unknown Weather Location"
                 }
-                self.solarDetails.solarDetailsArray[0].name = place
-                self.solarDetails.solarDetailsArray[self.currentPage].location = self.currentLocation
+                print("^^ Do I ever get here??")
+                self.solarDetails.solarDetailsArray[self.currentPage].name = place
+                self.solarDetails.solarDetailsArray[self.currentPage].coordinate = self.currentLocation.coordinate
+                print("^^^ \(self.currentLocation.coordinate)")
+                print("Place \(place)")
                 self.updateUserInterface(for: self.currentPage)
                 
                 

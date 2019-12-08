@@ -16,6 +16,7 @@ class ListVC: UIViewController {
     
     var currentPage = 0
     var solarDetials = SolarDetails()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,11 +30,12 @@ class ListVC: UIViewController {
         if segue.identifier == "ToPageVC" {
             let destiantion = segue.destination as! PageVC
             currentPage = tableView.indexPathForSelectedRow!.row
-            print("***\(currentPage)")
             destiantion.currentPage = currentPage
             destiantion.solarDetails = solarDetials
         }
     }
+    
+
     
     @IBAction func editBarButtonPressed(_ sender: UIBarButtonItem) {
         if tableView.isEditing {
@@ -52,13 +54,24 @@ class ListVC: UIViewController {
         autocompleteController.delegate = self
         
         // Specify the place data types to return.
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue) |
-            UInt(GMSPlaceField.placeID.rawValue))!
+        let fields: GMSPlaceField = GMSPlaceField(rawValue:UInt(GMSPlaceField.name.rawValue) |
+            UInt(GMSPlaceField.placeID.rawValue) |
+            UInt(GMSPlaceField.coordinate.rawValue) |
+            GMSPlaceField.addressComponents.rawValue |
+            GMSPlaceField.formattedAddress.rawValue)!
+            
+            //GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue) |
+            //UInt(GMSPlaceField.placeID.rawValue))!
         autocompleteController.placeFields = fields
+        autocompleteController.tableCellBackgroundColor = UIColor.black
+        autocompleteController.primaryTextColor = UIColor.gray
+        autocompleteController.secondaryTextColor = UIColor.gray
+        autocompleteController.primaryTextHighlightColor = UIColor.white
+        autocompleteController.tableCellSeparatorColor = UIColor.white
         
         // Specify a filter.
         let filter = GMSAutocompleteFilter()
-        filter.type = .address
+        filter.type = .noFilter
         autocompleteController.autocompleteFilter = filter
         
         // Display the autocomplete view controller.
@@ -104,12 +117,10 @@ extension ListVC: UITableViewDelegate, UITableViewDataSource {
     func updateTable(place: GMSPlace) {
         let newIndexPath = IndexPath(row: solarDetials.solarDetailsArray.count, section: 0)
         
-        let longitude = place.coordinate.longitude
-        let latitude = place.coordinate.latitude
-        let newCoordinates = "\(latitude),\(longitude)"
-        
         let newSolarDetail = SolarDetail()
-        newSolarDetail.location = CLLocation(latitude: latitude, longitude: longitude)
+        newSolarDetail.name = place.name!
+        newSolarDetail.coordinate = place.coordinate
+        newSolarDetail.location = CLLocation(latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
         newSolarDetail.getTimes(date: Date())
         
         solarDetials.solarDetailsArray.append(newSolarDetail)
@@ -123,6 +134,7 @@ extension ListVC: GMSAutocompleteViewControllerDelegate {
     // Handle the user's selection.
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
         dismiss(animated: true, completion: nil)
+        print("\(place.coordinate)")
         updateTable(place: place)
     }
     

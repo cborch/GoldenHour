@@ -38,7 +38,6 @@ class PageVC: UIPageViewController {
         
         //solarDetails.solarDetailsArray.append(solarDetail1)
         //solarDetails.solarDetailsArray.append(solarDetail2)
-        print("I loaded")
 
         setViewControllers([createViewController(forPage: 0)], direction: .forward, animated: false, completion: nil)
     }
@@ -47,17 +46,17 @@ class PageVC: UIPageViewController {
         super.viewDidAppear(animated)
         configurePageControl()
         configureListButton()
-        print("Appeared")
     }
     
     func configureListButton() {
         let safeHeight = view.frame.height - view.safeAreaInsets.bottom
-        listButton = UIButton(frame: CGRect(x: view.frame.width - barButtonWidth, y: safeHeight - barButtonHeight, width: barButtonWidth, height: barButtonHeight))
+        listButton = UIButton(frame: CGRect(x: view.frame.width - barButtonWidth - 10, y: safeHeight - barButtonHeight, width: barButtonWidth, height: barButtonHeight))
         listButton.setImage(UIImage(named: "listbutton"), for: .normal)
         listButton.setImage(UIImage(named: "listbutton-highlighted"), for: .highlighted)
         listButton.addTarget(self, action: #selector(segueToListVC), for: .touchUpInside)
         listButton.setTitleColor(UIColor.white, for: .normal)
         view.addSubview(listButton)
+        view.bringSubviewToFront(listButton)
     }
     
     @objc func segueToListVC() {
