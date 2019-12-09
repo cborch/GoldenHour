@@ -11,6 +11,9 @@ import SwiftySuncalc
 import CoreLocation
 import SwiftDate
 import MapKit
+import TimeZoneLocate
+import Alamofire
+import SwiftyJSON
 
 class SolarDetail: NSObject, MKAnnotation {
     
@@ -22,10 +25,22 @@ class SolarDetail: NSObject, MKAnnotation {
     // Morning civil twilight start to end of golden hour
     var morningGoldenHourDuration: Int!
     
+    var nextMorningGoldenHourStart: Date!
+    var nextMorningGoldenHourEnd: Date!
+    var nextMorningGoldenHourDuration: Date!
+    
     // Evening Golden Hour start to civil twilight start
     var eveningGoldenHourStart: Date!
     var eveningGoldenHourEnd: Date! // Evening Golden Hour End = Sunset(civil twilight)
     var eveningGoldenHourDuration: Int!
+    var timeZone: TimeZone!
+    
+    var currentTemp = ""
+    var currentSummary: String!
+    var currentIcon = ""
+    var dsTimeZone: String!
+    var currentDSTime: Double!
+    
     
     var sunset: Date!
     var sunrise: Date!
@@ -62,6 +77,7 @@ class SolarDetail: NSObject, MKAnnotation {
     
     func getTimes(date: Date) {
         var times = suncalc.getTimes(date: date, lat: location.coordinate.latitude, lng: location.coordinate.longitude);
+        self.timeZone = location.timeZone
         self.morningGoldenHourStart = times["dawn"]
         self.morningGoldenHourEnd = times["goldenHourEnd"]
         self.eveningGoldenHourStart = times["goldenHour"]
@@ -69,8 +85,56 @@ class SolarDetail: NSObject, MKAnnotation {
         self.sunset = times["sunset"]
         self.sunrise = times["sunrise"]
         
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())
+        var nextMorningTimes = suncalc.getTimes(date: tomorrow!, lat: location.coordinate.latitude, lng: location.coordinate.longitude);
+        self.nextMorningGoldenHourStart = nextMorningTimes["dawn"]
+        print("&& \(nextMorningGoldenHourStart)")
+        self.nextMorningGoldenHourEnd = nextMorningTimes["goldenHourEnd"]
+        
         self.morningGoldenHourDuration = Int((morningGoldenHourEnd.timeIntervalSince(morningGoldenHourStart) / 60).rounded())
         self.eveningGoldenHourDuration = Int((eveningGoldenHourEnd.timeIntervalSince(eveningGoldenHourStart) / 60).rounded())
+    }
+    
+    func getWeather(completed: @escaping () -> ()) {
+        let weatherURL = urlBase + urlAPIKey + "\(String(location.coordinate.latitude))" + "," + "\(String(location.coordinate.longitude))"
+        print("$$ \(weatherURL)")
+        Alamofire.request(weatherURL).responseJSON { response in
+            switch response.result {
+            case .success(let value):
+                let json = JSON(value)
+                if let temperature = json["currently"]["temperature"].double {
+                    let roundedTemp = String(format: "%3.f", temperature)
+                    self.currentTemp = roundedTemp + "°"
+                    print("$$ \(self.currentTemp)")
+                } else {
+                    print("Could not return a  temp")
+                }
+                if let summary = json["hourly"]["summary"].string {
+                    self.currentSummary = summary
+                } else {
+                    print("Could not return a summary")
+                }
+                if let icon = json["currently"]["icon"].string {
+                    print("$$ \(self.currentIcon)")
+                    self.currentIcon = icon
+                } else {
+                    print("Could not return an icon")
+                }
+                if let timeZone = json["timezone"].string {
+                    self.dsTimeZone = timeZone
+                } else {
+                    print("Could not return an timeZone")
+                }
+                if let time = json["currently"]["time"].double {
+                    self.currentDSTime = time
+                } else {
+                    print("Could not return an time")
+                }
+            case .failure(let error):
+                print(error)
+            }
+            completed()
+        }
     }
     
     func calculateSections() -> [Double] {

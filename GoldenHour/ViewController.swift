@@ -11,13 +11,19 @@ import CoreLocation
 import MultiProgressView
 import SwiftDate
 import MapKit
+import TimeZoneLocate
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var summaryLabel: UILabel!
+    @IBOutlet weak var temperatureLabel: UILabel!
+    
     
     var currentPage = 0
     var duration: TimeInterval!
     let regionDistance: CLLocationDistance = 100000
 
+    @IBOutlet weak var iconImageView: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var countDownLabel: UILabel!
@@ -68,17 +74,23 @@ class ViewController: UIViewController {
         
         if currentPage != 0 {
             solarDetails.solarDetailsArray[currentPage].getTimes(date: Date())
-            updateUserInterface(for: currentPage)
+            solarDetails.solarDetailsArray[currentPage].getWeather {
+                self.updateUserInterface(for: self.currentPage)
+            }
+            
         }
         
         if currentPage == 0 {
             loadCurrentLocation {
                 self.solarDetails.solarDetailsArray[0].getTimes(date: Date())
+                self.solarDetails.solarDetailsArray[0].getWeather {
+                    self.updateUserInterface(for: self.currentPage)
+                }
             }
         }
     
-
-
+        
+        
         var sectionArray = solarDetails.solarDetailsArray[currentPage].calculateSections()
         for i in 0..<sectionArray.count {
             progressView.setProgress(section: i, to: 0.0)
@@ -92,6 +104,7 @@ class ViewController: UIViewController {
         
         let region = MKCoordinateRegion(center: solarDetails.solarDetailsArray[currentPage].location.coordinate, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
         mapView.setRegion(region, animated: true)
+        
         
         checkGH()
     }
@@ -166,6 +179,7 @@ class ViewController: UIViewController {
             statusLabel.text = "Until Golden Hour"
         } else { // Leadup to morning GH
             duration = solarDetailElement.morningGoldenHourStart.timeIntervalSince(Date())
+            print("&& formatter \(formatter.string(from: solarDetailElement.nextMorningGoldenHourStart))")
             print("Leadup to morning")
             bottomBackgroundView.backgroundColor = UIColor.darkGray
             statusLabel.text = "Until Golden Hour"
@@ -266,6 +280,10 @@ class ViewController: UIViewController {
         
         morningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].morningGoldenHourDuration!) minutes"
         eveningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].eveningGoldenHourDuration!) minutes"
+        
+        summaryLabel.text = solarDetails.solarDetailsArray[currentPage].currentSummary
+        temperatureLabel.text = solarDetails.solarDetailsArray[currentPage].currentTemp
+        iconImageView.image = UIImage(named: solarDetails.solarDetailsArray[currentPage].currentIcon)
         print("^^^^ UI Updated with location \(solarDetails.solarDetailsArray[currentPage].location) sunrise should be \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunrise))")
         updateMap()
     }

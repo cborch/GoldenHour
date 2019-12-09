@@ -23,6 +23,7 @@
 		C562D1992395C17100CE7D91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C562D1972395C17100CE7D91 /* Main.storyboard */; };
 		C562D19B2395C17300CE7D91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C562D19A2395C17300CE7D91 /* Assets.xcassets */; };
 		C562D19E2395C17300CE7D91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C562D19C2395C17300CE7D91 /* LaunchScreen.storyboard */; };
+		C5E70968239E878800757E11 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E70967239E878800757E11 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 		C562D19A2395C17300CE7D91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C562D19D2395C17300CE7D91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C562D19F2395C17300CE7D91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C5E70967239E878800757E11 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F85B5AE12B38A877B600650B /* Pods-GoldenHour.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoldenHour.debug.xcconfig"; path = "Target Support Files/Pods-GoldenHour/Pods-GoldenHour.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -103,6 +105,7 @@
 				C555E410239726980051145D /* DayType.swift */,
 				C555E412239727EA0051145D /* UIColor+Extensions.swift */,
 				C555E414239728060051145D /* UIView+Extensions.swift */,
+				C5E70967239E878800757E11 /* Constants.swift */,
 				C562D19A2395C17300CE7D91 /* Assets.xcassets */,
 				C562D19C2395C17300CE7D91 /* LaunchScreen.storyboard */,
 				C562D19F2395C17300CE7D91 /* Info.plist */,
@@ -258,6 +261,7 @@
 				C562D1962395C17100CE7D91 /* ViewController.swift in Sources */,
 				C51F61082395CA930021B95E /* DayCell.swift in Sources */,
 				C51F61102396B7350021B95E /* SolarDetails.swift in Sources */,
+				C5E70968239E878800757E11 /* Constants.swift in Sources */,
 				C54996A42398421C002AFBC1 /* PageVC.swift in Sources */,
 				C51F610C239600050021B95E /* SolarLocation.swift in Sources */,
 				C562D1942395C17100CE7D91 /* AppDelegate.swift in Sources */,
