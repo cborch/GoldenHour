@@ -234,6 +234,8 @@ class ViewController: UIViewController {
         formatter.timeZone = .current
         formatter.dateFormat = "HH:mm"
         formatter.timeStyle = .short
+        formatter.amSymbol = ""
+        formatter.pmSymbol = ""
     }
     
     
@@ -272,11 +274,11 @@ class ViewController: UIViewController {
     
     
     func updateUserInterface(for currentPage: Int) {
-        morningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourEnd))"
-        sunriseLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunrise))"
+        morningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].morningGoldenHourEnd))AM"
+        sunriseLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunrise))AM"
         
-        eveningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourEnd))"
-        sunsetLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunset))"
+        eveningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourEnd))PM"
+        sunsetLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunset))PM"
         
         morningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].morningGoldenHourDuration!) minutes"
         eveningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].eveningGoldenHourDuration!) minutes"
