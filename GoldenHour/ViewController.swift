@@ -15,6 +15,9 @@ import TimeZoneLocate
 
 class ViewController: UIViewController {
     
+    var demoVar = 1
+    
+    @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var summaryLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
     
@@ -134,12 +137,25 @@ class ViewController: UIViewController {
         UIView.animate(withDuration: 1.0, delay:1, options: [.repeat, .autoreverse], animations: {
             self.statusBackgroundView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
         }, completion: nil)
-        
+
     }
+    
+//    func animateProgressBar() {
+//        let timeRemaining = secondsToGH
+//        let percentageCompleted = abs(timeRemaining / TimeInterval(exactly: 30.0)!)
+//
+//        UIView.animate(withDuration: 1.0, delay:0.5, options: [.curveLinear], animations: {
+//            self.statusBackgroundView.setProgress(section: 2, to: Float(percentageCompleted))
+//        }, completion: nil)
+//        UIView.animate(withDuration: 1.0, delay:1, options: [.repeat, .autoreverse], animations: {
+//            self.statusBackgroundView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+//        }, completion: nil)
+//
+//    }
     
     
     func animateBackgroundViews(count: Float, views: [UIView]) {
-        UIView.animate(withDuration:0.5, delay:0, options: [.repeat, .autoreverse], animations: {
+        UIView.animate(withDuration:0.75, delay:0, options: [.repeat, .autoreverse, .curveEaseInOut], animations: {
             UIView.setAnimationRepeatCount(count)
             for element in views {
                 element.transform = CGAffineTransform(scaleX: 1.02, y: 1.02)
@@ -178,16 +194,51 @@ class ViewController: UIViewController {
             print("This is working??!!!")
             statusLabel.text = "Until Golden Hour"
         } else { // Leadup to morning GH
-            duration = solarDetailElement.morningGoldenHourStart.timeIntervalSince(Date())
+            duration = Date().timeIntervalSince(solarDetailElement.morningGoldenHourStart)
             print("&& formatter \(formatter.string(from: solarDetailElement.nextMorningGoldenHourStart))")
             print("Leadup to morning")
             bottomBackgroundView.backgroundColor = UIColor.darkGray
             statusLabel.text = "Until Golden Hour"
         }
-        
+
         setupTimerDuration(with: abs(duration))
         runTimer()
     }
+    
+//    @objc func triggerTimer(with currentElement: Int) {
+//        print("*** Timer Triggered   I think its this date \(formatter.string(from: Date())) and this time zone \(formatter.timeZone)")
+//        let solarDetailElement = solarDetails.solarDetailsArray[currentElement]
+//        if (demoVar == 1) { // We are in morning GH
+//            duration = TimeInterval(exactly: 30.0)
+//            topBackgroundView.backgroundColor = UIColor.StorageExample.progressOrange
+//            animateBackgroundViews(count: 3, views: [topBackgroundView])
+//            demoVar = 2
+//            statusLabel.text = "Left In Golden Hour"
+//        } else if (demoVar == 3) { // We are in evening GH
+//            duration = TimeInterval(exactly: 30.0)
+//            bottomBackgroundView.backgroundColor = UIColor.StorageExample.progressOrange
+//            animateBackgroundViews(count: 3, views: [bottomBackgroundView])
+//            demoVar = 4
+//            statusLabel.text = "Left In Golden Hour"
+//        } else if demoVar == 2 { // Leadup to evening GH
+//            duration = TimeInterval(exactly: 30.0)
+//            //duration = TimeInterval(exactly: 10)!
+//            topBackgroundView.backgroundColor = UIColor.darkGray
+//            demoVar = 3
+//            print("This is working??!!!")
+//            statusLabel.text = "Until Golden Hour"
+//        } else { // Leadup to morning GH
+//            duration = TimeInterval(exactly: 30.0)
+//            print("&& formatter \(formatter.string(from: solarDetailElement.nextMorningGoldenHourStart))")
+//            print("Leadup to morning")
+//            bottomBackgroundView.backgroundColor = UIColor.darkGray
+//            demoVar = 1
+//            statusLabel.text = "Until Golden Hour"
+//        }
+//
+//        setupTimerDuration(with: abs(duration))
+//        runTimer()
+//    }
     
     
     func checkGH() {
@@ -202,6 +253,19 @@ class ViewController: UIViewController {
             isGoldenHour = false
         }
     }
+    
+//    func checkGH() {
+//        let solarDetailElement = solarDetails.solarDetailsArray[currentPage]
+//        if (demoVar == 1) { // We are in morning GH
+//            isGoldenHour = true
+//        } else if demoVar == 3 { // We are in evening GH
+//            isGoldenHour = true
+//        } else if demoVar == 2 { // Leadup to evening GH
+//            isGoldenHour = false
+//        } else { // Leadup to morning GH
+//            isGoldenHour = false
+//        }
+//    }
     
     
     func timeString(time: TimeInterval) -> String {
@@ -279,6 +343,8 @@ class ViewController: UIViewController {
         
         eveningGoldenHourLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourStart)) - \(formatter.string(from: solarDetails.solarDetailsArray[currentPage].eveningGoldenHourEnd))PM"
         sunsetLabel.text = "\(formatter.string(from: solarDetails.solarDetailsArray[currentPage].sunset))PM"
+        
+        locationLabel.text = "Light Report for \(solarDetails.solarDetailsArray[currentPage].name)"
         
         morningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].morningGoldenHourDuration!) minutes"
         eveningGoldenHourDurationLabel.text = "\(solarDetails.solarDetailsArray[currentPage].eveningGoldenHourDuration!) minutes"
